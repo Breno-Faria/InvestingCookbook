@@ -78,6 +78,12 @@
             socket.send(textField.value);
             textField.value = '';
             };
+
+            function sendData() {
+                const socket = new WebSocket('ws://' + location.host + '/echo');
+                
+            }
+            }
         </script>
 
 
