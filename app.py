@@ -8,7 +8,7 @@ def home():
     return render_template("index.html", context=context)
 
 @app.route("/tutorial-compounding")
-def home():
+def compounding():
     context = {'title': "finance cookbook"}
     return render_template("compounding.html", context=context)
 
