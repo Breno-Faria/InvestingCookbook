@@ -80,7 +80,8 @@
             };
 
             function sendData() {
-                return "a";
+                const socket = new WebSocket('ws://' + location.host + '/echo');
+                
             }
             }
         </script>
