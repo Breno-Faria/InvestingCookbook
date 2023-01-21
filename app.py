@@ -25,14 +25,5 @@ def compound():
 def echo_socket(ws):
     while True:
         message = ws.receive()
+
         ws.send(message)
-
-
-
-
-
-
-
-
-
-
