@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Compounding</title>
+    <link rel="stylesheet" href="../static/styles/style.css">
+</head>
+<body>
+    <div id="compounding">
+        <div id="compounding-contents">
+            <div id="compounding-controls">
+                <h1>Understanding Compounding</h1>
+            </div>
+            <div id="compounding-graphing">
+                <h1>Graphing</h1>
+                <ul>
+                    {% for item in data %}
+                        <li>{{item.name}}</li>
+                        <li>{{item.place}}</li>
+                        <li>{{item.mob}}</li>
+                    {% endfor %}
+                    </ul>
+
+            </div>
+        </div>
+    </div>
+    
+</body>
+</html>
