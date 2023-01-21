@@ -26,16 +26,65 @@
                 <label for="compounding-monthly-contribution">Monthly Contribution</label>
                 <input type="number" id="compounding-monthly-contribution" name="compounding-monthly-contribution" min="0" max="1000000" value="1000" step="100">
             </div>
-            
+
         </div>
 
         <div id="compounding-graphing">
             <h1>Graphing</h1>
-            <a>sddegedrh</a>
+            <canvas id="myChart"></canvas>
+          
+          <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+          
+          <script>
+            const ctx = document.getElementById('myChart');
+          
+            new Chart(ctx, {
+              type: 'bar',
+              data: {
+                labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+                datasets: [{
+                  label: 'amount accumulated',
+                  data: {{data}},
+                  borderWidth: 1
+                }, {
+                  label: 'amount accumulated',
+                  data: {{data}},
+                  borderWidth: 1
+                }]
+              },
+              options: {
+                scales: {
+                  y: {
+                    beginAtZero: true
+                  }
+                }
+              }
+            });
+          </script>
+
+        <script>
+            const log = (text, color) => {
+            document.getElementById('log').innerHTML += `<span style="color: ${color}">${text}</span><br>`;
+            };
+
+            const socket = new WebSocket('ws://' + location.host + '/echo');
+            socket.addEventListener('message', ev => {
+            log('<<< ' + ev.data, 'blue');
+            });
+            document.getElementById('form').onsubmit = ev => {
+            ev.preventDefault();
+            const textField = document.getElementById('text');
+            log('>>> ' + textField.value, 'red');
+            socket.send(textField.value);
+            textField.value = '';
+            };
+        </script>
 
 
 
         </div>
+        <div>
+            
 
     </div>
     
