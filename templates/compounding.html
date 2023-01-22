@@ -31,6 +31,11 @@
         <input type="number" id="compounding-monthly-contribution-input" name="compounding-monthly-contribution" min="0"
           max="1000000" value="1000" step="100">
       </div>
+      <br>
+        <div id="comment">
+          <p></p>
+
+        </div>
       <button onclick="changeChartType()">
         UFDUSJFUDSUFFDSS
       </button>
@@ -86,7 +91,18 @@
           const initial_investment = document.getElementById('compounding-initial-investment-input');
           const monthly_contribution = document.getElementById('compounding-monthly-contribution-input');
 
-
+          if (annual_rate.value){
+              document.getElementById('comment').innerHTML = "You are investing at a rate of " + annual_rate.value + "% per year. You are investing " + initial_investment.value + " dollars initially and " + monthly_contribution.value + " dollars monthly. Your investment will grow exponentially over time. <br>";
+          }
+          if(annual_rate.value == 0){
+              document.getElementById('comment').innerHTML += "Try increasing the annual rate to see how your investment grows over time.";
+          }
+          else if(annual_rate.value < 5){
+              document.getElementById('comment').innerHTML += "That's not bad but maybe you'd like to increase your rate to see how much more you can make.";
+          }
+          else if(annual_rate.value >= 5){
+              document.getElementById('comment').innerHTML += "Notice how insignificant your initial investment is compared to your investment after all thoses years? <br> This goes to show you the importance of compounding!";
+          }
 
           socket.send([annual_rate.value, initial_investment.value, monthly_contribution.value]);
         };
