@@ -73,7 +73,7 @@ def get_tickers_name() -> List[str]:
 def compute_efficient_weights(names: List[str],
                               start: datetime = datetime.datetime(2019, 1, 1),
                               end: datetime = datetime.datetime(2023, 1, 1)) \
-        -> None:
+        :
     """
     Compute efficient weights of a portfolio
     """

@@ -33,7 +33,7 @@ def diversification_socket(ws):
     while True:
         message = ws.receive()
         
-        weights_personal = [int(val) for val in message[:-1].split(",")]
+        weights_personal = [int(val) for val in message.split(",")[:-1]]
         print(weights_personal)
         stocks_selected = [stocks[i] for i, weight in enumerate(weights_personal) if weight > 0]
         weights_personal = [weight for weight in weights_personal if weight > 0]
@@ -48,11 +48,28 @@ def diversification_socket(ws):
         for col in stock_hist.columns:
             personal_pf[col] = stock_hist[col] * weights_personal[stocks_selected.index(col)]
             eff_pf[col] = stock_hist[col] * weights_eff[stocks_selected.index(col)]
+        
+        sp500 = pd.read_csv("data/sp500_value.csv").pct_change().dropna().cumsum()
+        personal_pf = personal_pf.cumsum()
+        eff_pf = eff_pf.cumsum()
 
-        print(eff_pf)
-        context = {}
-        context["weights"] = context["weights"]
-        ws.send("qq")
+        val = pd.concat([sp500, personal_pf, eff_pf], axis=1)
+
+        dates = val.index
+        sp500 = val["SP500"].values
+        personal_pf = val[stocks_selected].sum(axis=1).values
+        eff_pf = val[stocks_selected].sum(axis=1).values
+
+        context = {
+            "weights-personal": weights_personal, 
+            "weights-eff": weights_eff, 
+            "stocks": stocks_selected, 
+            "dates": dates, 
+            "sp500": sp500, 
+            "personal-pf": personal_pf, 
+            "eff-pf": eff_pf
+            }.json.dumps()
+        ws.send(context)
 
 @app.route("/tutorial-compounding")
 def compound():

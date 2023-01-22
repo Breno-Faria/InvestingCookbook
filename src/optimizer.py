@@ -7,7 +7,7 @@ from pypfopt import expected_returns
 from pypfopt.discrete_allocation import DiscreteAllocation, get_latest_prices
 import datetime
 
-def compute_efficient_weights(names: List[str]):
+def compute_efficient_weights(names):
     """
     Compute efficient weights of a portfolio
     """
