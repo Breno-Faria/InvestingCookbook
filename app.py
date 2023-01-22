@@ -1,6 +1,6 @@
 from flask import Flask, render_template
 from flask_sock import Sock
-#from .src.compounder import compound_investment_with_monthly_contributions as compound
+from .src.compounder import compound_investment_with_monthly_contributions as compound
 import json
 
 app = Flask(__name__, static_folder='static')
@@ -21,9 +21,11 @@ def compound():
     context = {'title': "finance cookbook"}
     return render_template("compounding.html", context=context, data=data)
 
+# rename this for compounding
 @sock.route('/echo')
 def echo_socket(ws):
     while True:
         message = ws.receive()
         print([int(val) for val in message.split(",")])
-        ws.send(message)
+        ts_compounding = compound(message[0]/100, message[1], message[2], 30).to_json(orient='index')
+        ws.send(ts_compounding)
