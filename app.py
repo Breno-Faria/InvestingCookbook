@@ -2,6 +2,7 @@ from flask import Flask, render_template
 from flask_sock import Sock
 from src.compounder import compound_investment_with_monthly_contributions as compound_df
 import json
+from utils import *
 
 app = Flask(__name__, static_folder='static')
 sock = Sock(app)
@@ -10,10 +11,20 @@ sock = Sock(app)
 def home():
     context = {'title': "finance cookbook"}
     return render_template("home.html", context=context)
-
+@app.route("/tutorials")
+def tutorials():
+    context = {'title': "finance cookbook"}
+    return render_template("tutorials.html", context=context)
 @app.route("/tutorial-diversification")
-def diversify():
-    return render_template("diversification.html")
+def diversification():
+    stocks = ["MSFT", "RCL", "DIS", "PG", "AAPL", "MMM", "AXP", "BA", "LUV"]
+    return render_template("diversification.html", stocks=stocks)
+
+@sock.route('/diversification-ws')
+def diversification_socket(ws):
+    while True:
+        message = ws.receive()
+        ws.send(message)
 
 @app.route("/tutorial-compounding")
 def compound():

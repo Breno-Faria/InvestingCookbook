@@ -4,7 +4,7 @@ from streamlit_tags import st_tags
 import streamlit as st
 
 if __name__ == "__main__":
-    st.title("Portfolio Optimizer")
+    #st.title("Portfolio Optimizer")
     names = st_tags(
         label='# Enter tickers:',
         text='Press enter to add more',

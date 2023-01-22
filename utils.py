@@ -1,4 +1,4 @@
-import streamlit as st
+#import streamlit as st
 import finquant.portfolio as fq
 from typing import List, Tuple, Any
 import pandas as pd
@@ -90,9 +90,9 @@ def compute_efficient_weights(names: List[str],
     cleaned_weights = ef.clean_weights()
     ef.save_weights_to_file("data/weights.csv")
     ret, vol, sharpe = ef.portfolio_performance(verbose=True)
-    st.write("Expected Annual Return: ", round(ret, 4))
-    st.write("Annual Volatility: ", round(vol, 4))
-    st.write("Sharpe Ratio: ", round(sharpe, 4))
+    #st.write("Expected Annual Return: ", round(ret, 4))
+    #st.write("Annual Volatility: ", round(vol, 4))
+    #st.write("Sharpe Ratio: ", round(sharpe, 4))
 
     return None
 
@@ -123,21 +123,21 @@ def plot_w_allocation(allocation: pd.DataFrame,
 
     weights = pd.read_csv("data/weights.csv", index_col=0, header=None)
     weights.columns = ["Weights"]
-    st.write(weights)
+    #st.write(weights)
     weights = weights.sort_values(by="Weights", ascending=False)
     fig = px.bar(weights, x=weights.index, y="Weights", color="Weights")
     fig.update_layout(title="Allocation of the portfolio in %")
-    st.plotly_chart(fig)
+    #st.plotly_chart(fig)
 
     # convert dict to dataframe
     allocation = pd.DataFrame.from_dict(allocation, orient="index", columns=["Allocation"])
     allocation = allocation.sort_values(by="Allocation", ascending=False)
     fig = px.bar(allocation, x=allocation.index, y="Allocation", color="Allocation")
     fig.update_layout(title="Allocation of the portfolio in number of shares")
-    st.plotly_chart(fig)
+    #st.plotly_chart(fig)
 
-    st.write(f"By investing **{total_portfolio_value :.1f}** \$ in the portfolio, "
-             f"you will have **{leftover:.4f}** \$ left over")
+    #st.write(f"By investing **{total_portfolio_value :.1f}** \$ in the portfolio, "
+    #         f"you will have **{leftover:.4f}** \$ left over")
 
     return None
 
@@ -227,7 +227,7 @@ def plot_pf_vs_index() -> None:
                         xaxis_title="Date",
                         yaxis_title="Value")
 
-    st.plotly_chart(fig)
+    #st.plotly_chart(fig)
 
     return None
 
@@ -269,7 +269,7 @@ def plot_pf_cum_returns_vs_sp500() -> None:
                         xaxis_title="Date",
                         yaxis_title="Cumulative Returns")
 
-    st.plotly_chart(fig)
+    #st.plotly_chart(fig)
 
     return None
 
