@@ -11,6 +11,7 @@ from pypfopt.discrete_allocation import DiscreteAllocation, get_latest_prices
 import yfinance as yf
 import datetime
 import plotly.graph_objects as go
+import plotly.express as px
 
 def download_data(names: List[str] = None,
                   start: datetime = datetime.datetime(2019, 1, 1),
@@ -35,39 +36,39 @@ def get_tickers_name() -> List[str]:
     tickers = tickers["Symbol"].tolist()
 
     return tickers
-def create_pf(names: List[str],
-              start_date: str,
-              end_date: str,
-              pf_allocation: pd.DataFrame) -> fq.Portfolio:
-    """
-    Create a portfolio from a list of tickers
-
-    """
-
-    pf = fq.build_portfolio(names=names,
-                            start_date=start_date,
-                            end_date=end_date,
-                            data_api='yfinance',
-                            pf_allocation=pf_allocation)
-
-    return pf
-
-def plot_cum_returns(pf: fq.Portfolio) -> None:
-    """
-    Plot cumulative returns of a portfolio
-    """
-
-    pf.comp_cumulative_returns().plot(
-        title="Cumulative returns of the portfolio").axhline(y=0,
-                                                             color="black",
-                                                             lw=3)
-    plt.savefig("figures/cumulative_returns.png")
-    # open the image
-    image = Image.open("figures/cumulative_returns.png")
-    # show the image
-    st.image(image, caption="Cumulative returns of the portfolio")
-
-    return None
+# def create_pf(names: List[str],
+#               start_date: str,
+#               end_date: str,
+#               pf_allocation: pd.DataFrame) -> fq.Portfolio:
+#     """
+#     Create a portfolio from a list of tickers
+#
+#     """
+#
+#     pf = fq.build_portfolio(names=names,
+#                             start_date=start_date,
+#                             end_date=end_date,
+#                             data_api='yfinance',
+#                             pf_allocation=pf_allocation)
+#
+#     return pf
+#
+# def plot_cum_returns(pf: fq.Portfolio) -> None:
+#     """
+#     Plot cumulative returns of a portfolio
+#     """
+#
+#     pf.comp_cumulative_returns().plot(
+#         title="Cumulative returns of the portfolio").axhline(y=0,
+#                                                              color="black",
+#                                                              lw=3)
+#     plt.savefig("figures/cumulative_returns.png")
+#     # open the image
+#     image = Image.open("figures/cumulative_returns.png")
+#     # show the image
+#     st.image(image, caption="Cumulative returns of the portfolio")
+#
+#     return None
 
 def compute_efficient_weights(names: List[str],
                               start: datetime = datetime.datetime(2019, 1, 1),
@@ -87,8 +88,7 @@ def compute_efficient_weights(names: List[str],
     ef = EfficientFrontier(mu, S)
     raw_weights = ef.max_sharpe()
     cleaned_weights = ef.clean_weights()
-    ef.save_weights_to_file("data/weights.csv")  # saves to file
-    st.write(cleaned_weights)
+    ef.save_weights_to_file("data/weights.csv")
     ret, vol, sharpe = ef.portfolio_performance(verbose=True)
     st.write("Expected Annual Return: ", round(ret, 4))
     st.write("Annual Volatility: ", round(vol, 4))
@@ -112,8 +112,32 @@ def compute_discrete_allocation(names: List[str],
                             total_portfolio_value=total_portfolio_value)
     allocation, leftover = da.greedy_portfolio()
 
-    st.write("Discrete allocation:", allocation)
-    st.write("Funds remaining: ${:.2f}".format(leftover))
+    return allocation, leftover
+
+def plot_w_allocation(allocation: pd.DataFrame,
+                      leftover: float,
+                      total_portfolio_value: float) -> None:
+    """
+    Plot allocation of a portfolio
+    """
+
+    weights = pd.read_csv("data/weights.csv", index_col=0, header=None)
+    weights.columns = ["Weights"]
+    st.write(weights)
+    weights = weights.sort_values(by="Weights", ascending=False)
+    fig = px.bar(weights, x=weights.index, y="Weights", color="Weights")
+    fig.update_layout(title="Allocation of the portfolio in %")
+    st.plotly_chart(fig)
+
+    # convert dict to dataframe
+    allocation = pd.DataFrame.from_dict(allocation, orient="index", columns=["Allocation"])
+    allocation = allocation.sort_values(by="Allocation", ascending=False)
+    fig = px.bar(allocation, x=allocation.index, y="Allocation", color="Allocation")
+    fig.update_layout(title="Allocation of the portfolio in number of shares")
+    st.plotly_chart(fig)
+
+    st.write(f"By investing **{total_portfolio_value :.1f}** \$ in the portfolio, "
+             f"you will have **{leftover:.4f}** \$ left over")
 
     return None
 
@@ -202,6 +226,48 @@ def plot_pf_vs_index() -> None:
     fig.update_layout(title="Portfolio vs S&P500",
                         xaxis_title="Date",
                         yaxis_title="Value")
+
+    st.plotly_chart(fig)
+
+    return None
+
+def plot_pf_cum_returns_vs_sp500() -> None:
+    """
+    Plot the cumulative returns of the portfolio and the S&P500 index
+    """
+    total_pf_value = pd.read_csv("data/total_pf_value.csv", index_col=0)
+    balanced_pf = pd.read_csv("data/balanced_pf_value.csv", index_col=0)
+    sp500_value = pd.read_csv("data/sp500_value.csv", index_col=0)
+    # convert sp500 value to cumulative returns
+    sp500_cum_returns = (1 + sp500_value.pct_change()).cumprod()
+    pf_cum_returns = (1 + total_pf_value.pct_change()).cumprod()
+    balanced_pf_cum_returns = (1 + balanced_pf.pct_change()).cumprod()
+
+    # replace first line by ones
+    pf_cum_returns.iloc[0] = 1
+    sp500_cum_returns.iloc[0] = 1
+    balanced_pf_cum_returns.iloc[0] = 1
+    # rename column
+    # merge the two dataframes
+
+    df = pd.merge(pf_cum_returns, sp500_cum_returns, left_index=True, right_index=True)
+    df = pd.merge(df, balanced_pf_cum_returns, left_index=True, right_index=True)
+
+    # plot the two dataframes
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=df.index, y=df["PF_value"],
+                                mode='lines',
+                                name='Portfolio'))
+    fig.add_trace(go.Scatter(x=df.index, y=df["SP500"],
+                                mode='lines',
+                                name='SP500'))
+    fig.add_trace(go.Scatter(x=df.index, y=df["Balanced_PF"],
+                                mode='lines',
+                                name='Balanced Portfolio'))
+
+    fig.update_layout(title="Portfolio vs S&P500 in Cumulative Returns",
+                        xaxis_title="Date",
+                        yaxis_title="Cumulative Returns")
 
     st.plotly_chart(fig)
 
