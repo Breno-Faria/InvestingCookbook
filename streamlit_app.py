@@ -6,13 +6,13 @@ import random
 
 if __name__ == "__main__":
     st.title("Portfolio Optimizer")
-    suggestions = get_tickers_name()
     names = st_tags(
         label='# Enter tickers:',
         text='Press enter to add more',
         # random sample from suggestions
-        value=random.choices(suggestions, k=5),
-        suggestions=suggestions,
+        value=["MSFT", "RCL", "DIS", "PG", "AAPL"],
+        suggestions=["MSFT", "RCL", "DIS", "PG",
+                     "AAPL", "MMM", "AXP", "BA", "LUV"],
         maxtags=15,
         key='1')
 
@@ -26,6 +26,12 @@ if __name__ == "__main__":
     compute_efficient_weights(names, start=start_date, end=end_date)
     total_portfolio_value = st.sidebar.number_input("Total portfolio value",
                                             value=10_000)
+    compute_discrete_allocation(names,
+                                start=start_date,
+                                end=end_date,
+                                total_portfolio_value=total_portfolio_value)
+    cum_returns = compute_cum_returns()
+    st.write(cum_returns)
 
 
 

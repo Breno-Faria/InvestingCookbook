@@ -7,6 +7,7 @@ from PIL import Image
 from pypfopt import EfficientFrontier
 from pypfopt import risk_models
 from pypfopt import expected_returns
+from pypfopt.discrete_allocation import DiscreteAllocation, get_latest_prices
 import yfinance as yf
 import datetime
 
@@ -17,6 +18,8 @@ def download_data(names: List[str] = None,
 
     data = yf.download(names, start=start, end=end)
     data = data["Adj Close"]
+    # drop nan values
+    data = data.dropna()
     data.to_csv('data/sp500_data.csv')
 
     return data
@@ -89,6 +92,56 @@ def compute_efficient_weights(names: List[str],
     st.write("Sharpe Ratio: ", round(sharpe, 4))
 
     return None
+
+def compute_discrete_allocation(names: List[str],
+                                start: datetime = datetime.datetime(2019, 1, 1),
+                                end: datetime = datetime.datetime(2023, 1, 1),
+                                total_portfolio_value: int = 10_000):
+
+    df = download_data(names=names, start=start, end=end)
+    df = df[names]
+    latest_prices = get_latest_prices(df)
+    weights = pd.read_csv("data/weights.csv", header=None)
+    st.write(weights)
+    # Convert weights to a dictionary
+    weights = weights.set_index(0).T.to_dict('records')[0]
+    st.write(weights)
+
+    da = DiscreteAllocation(weights, latest_prices,
+                            total_portfolio_value=total_portfolio_value)
+    allocation, leftover = da.greedy_portfolio()
+
+    st.write("Discrete allocation:", allocation)
+    st.write("Funds remaining: ${:.2f}".format(leftover))
+
+    return None
+
+def compute_cum_returns() -> pd.DataFrame:
+    """
+    Compute cumulative returns of a portfolio
+    """
+
+    df = pd.read_csv("data/sp500_data.csv", index_col=0)
+    # Compute cumulative returns for each ticker
+    cum_returns = (1 + df.pct_change()).cumprod()
+    cum_returns.to_csv("data/cum_returns.csv")
+
+    return cum_returns
+
+def compute_portfolio_value(cum_returns: pd.DataFrame,
+                            allocation: pd.DataFrame,
+                            total_portfolio_value: float) -> pd.DataFrame:
+    """
+    Compute the value of a portfolio
+    """
+
+    pf_value = cum_returns * allocation * total_portfolio_value
+    pf_value.to_csv("data/pf_value.csv")
+
+    return pf_value
+
+
+
 
 
 
