@@ -10,6 +10,7 @@ from pypfopt import expected_returns
 from pypfopt.discrete_allocation import DiscreteAllocation, get_latest_prices
 import yfinance as yf
 import datetime
+import plotly.graph_objects as go
 
 def download_data(names: List[str] = None,
                   start: datetime = datetime.datetime(2019, 1, 1),
@@ -141,22 +142,51 @@ def compute_portfolio_value(cum_returns: pd.DataFrame,
     # keep the first column
     allocation = allocation.iloc[:, 0]
     pf_value = cum_returns * allocation * total_portfolio_value
-    pf_value.to_csv("data/pf_value.csv")
+    total_pf_value = pf_value.sum(axis=1)
+    # rename column
+    total_pf_value = total_pf_value.rename("PF_value")
+    total_pf_value.to_csv("data/total_pf_value.csv")
 
-    return pf_value
+    return total_pf_value
 
-def compute_sp500_value() -> pd.DataFrame:
+def compute_sp500_value(total_portfolio_value: float) -> pd.DataFrame:
     """
     Compute the value of the S&P500 index
     """
     sp500 = pd.read_csv("data/sp500_index.csv", index_col=0)
     sp500 = sp500["Adj Close"]
-    sp500 = (1 + sp500.pct_change()).cumprod()
+    sp500_cum_returns = (1 + sp500.pct_change()).cumprod()
     # replace first line by ones
-    sp500.iloc[0] = 1
-    sp500.to_csv("data/sp500_value.csv")
+    sp500_cum_returns.iloc[0] = 1
+    # rename column
+    sp500_cum_returns = sp500_cum_returns.rename("SP500")
+    sp500_value = sp500_cum_returns * total_portfolio_value
+    sp500_value.to_csv("data/sp500_value.csv")
 
-    return sp500
+    return sp500_value
+
+def plot_pf_vs_index() -> None:
+    """
+    Plot the value of the portfolio and the S&P500 index
+    """
+    total_pf_value = pd.read_csv("data/total_pf_value.csv", index_col=0)
+    sp500_value = pd.read_csv("data/sp500_value.csv", index_col=0)
+    # merge the two dataframes
+    df = pd.merge(total_pf_value, sp500_value, left_index=True, right_index=True)
+    # plot the two dataframes
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=df.index, y=df["PF_value"],
+                                mode='lines',
+                                name='Portfolio'))
+    fig.add_trace(go.Scatter(x=df.index, y=df["SP500"],
+                                mode='lines',
+                                name='S&P500'))
+    fig.update_layout(title="Portfolio vs S&P500",
+                        xaxis_title="Date",
+                        yaxis_title="Value")
+
+    st.plotly_chart(fig)
+    return None
 
 
 
