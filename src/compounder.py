@@ -1,6 +1,5 @@
 import pandas as pd
 import datetime as dt
-import matplotlib.pyplot as plt
 
 # compound series beginning at initial value, with annual growth rate and monthly contributions
 def compound_investment_with_monthly_contributions(initial, rate, years, monthly_contribution):
@@ -22,14 +21,9 @@ def compound_investment_with_monthly_contributions(initial, rate, years, monthly
             investment_no_compounding.append(investment_no_compounding[-1] + monthly_contribution)
             # Add the date for the current month to the dates list
             dates.append(dates[-1] + pd.DateOffset(months=1))
+    print(investment)
     # Create a DataFrame from the investment list and add column headers
     df = pd.DataFrame({'Investment':investment, 'Investment without compounding':investment_no_compounding},index=dates).resample('Y').first()
     df.index = df.index.strftime('%Y')
     return df
 
-if __name__ == "__main__":
-    # create a series of annual balances
-    balances = compound_series(100000, 0.1, 20)
-    # print the series
-    plt.plot(balances)
-    plt.show()

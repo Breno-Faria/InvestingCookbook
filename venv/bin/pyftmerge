@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 #!/Users/thomasvaudescal/Documents/Mes_documents/14_PycharmProject/InvestingCookbook2/venv/bin/python
+=======
+#!/Users/breno/Desktop/code/hackathon/InvestingCookbook/venv/bin/python3
+>>>>>>> 11a0a7dc0b10d66f350b1c8e993db8f522b5429c
 # -*- coding: utf-8 -*-
 import re
 import sys
