@@ -133,6 +133,22 @@ def compute_cum_returns() -> pd.DataFrame:
 
     return cum_returns
 
+def compute_balanced_pf_value(cum_returns: pd.DataFrame,
+                            total_portfolio_value: float) -> pd.DataFrame:
+    """
+    Compute the value of a balanced portfolio
+    """
+    allocation = [1 / len(cum_returns.columns)] * len(cum_returns.columns)
+    # keep the first column
+    pf_value = cum_returns * allocation * total_portfolio_value
+    balanced_pf_value = pf_value.sum(axis=1)
+    # rename column
+    balanced_pf_value = balanced_pf_value.rename("Balanced_PF")
+    balanced_pf_value.to_csv("data/balanced_pf_value.csv")
+
+    return balanced_pf_value
+
+
 def compute_portfolio_value(cum_returns: pd.DataFrame,
                             total_portfolio_value: float) -> pd.DataFrame:
     """
@@ -171,6 +187,7 @@ def plot_pf_vs_index() -> None:
     """
     total_pf_value = pd.read_csv("data/total_pf_value.csv", index_col=0)
     sp500_value = pd.read_csv("data/sp500_value.csv", index_col=0)
+    balanced_pf_value = pd.read_csv("data/balanced_pf_value.csv", index_col=0)
     # merge the two dataframes
     df = pd.merge(total_pf_value, sp500_value, left_index=True, right_index=True)
     # plot the two dataframes
@@ -181,6 +198,9 @@ def plot_pf_vs_index() -> None:
     fig.add_trace(go.Scatter(x=df.index, y=df["SP500"],
                                 mode='lines',
                                 name='S&P500'))
+    fig.add_trace(go.Scatter(x=balanced_pf_value.index, y=balanced_pf_value["Balanced_PF"],
+                                mode='lines',
+                                name='Balanced Portfolio'))
     fig.update_layout(title="Portfolio vs S&P500",
                         xaxis_title="Date",
                         yaxis_title="Value")

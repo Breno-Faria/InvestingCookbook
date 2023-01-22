@@ -34,6 +34,7 @@ if __name__ == "__main__":
     st.write(cum_returns)
     st.write(compute_portfolio_value(cum_returns, total_portfolio_value))
     st.write(compute_sp500_value(total_portfolio_value))
+    st.write(compute_balanced_pf_value(cum_returns, total_portfolio_value))
     plot_pf_vs_index()
 
 
