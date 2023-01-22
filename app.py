@@ -25,5 +25,5 @@ def compound():
 def echo_socket(ws):
     while True:
         message = ws.receive()
-        print(message)
+        print([int(val) for val in message.split(",")])
         ws.send(message)
