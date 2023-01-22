@@ -32,6 +32,9 @@ if __name__ == "__main__":
                                 total_portfolio_value=total_portfolio_value)
     cum_returns = compute_cum_returns()
     st.write(cum_returns)
+    st.write(compute_portfolio_value(cum_returns, total_portfolio_value))
+    st.write(compute_sp500_value())
+
 
 
 

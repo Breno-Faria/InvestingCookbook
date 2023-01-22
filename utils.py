@@ -17,10 +17,12 @@ def download_data(names: List[str] = None,
         -> pd.DataFrame:
 
     data = yf.download(names, start=start, end=end)
+    sp500 = yf.download("^GSPC", start=start, end=end)
     data = data["Adj Close"]
     # drop nan values
     data = data.dropna()
     data.to_csv('data/sp500_data.csv')
+    sp500.to_csv('data/sp500_index.csv')
 
     return data
 def get_tickers_name() -> List[str]:
@@ -124,21 +126,38 @@ def compute_cum_returns() -> pd.DataFrame:
     df = pd.read_csv("data/sp500_data.csv", index_col=0)
     # Compute cumulative returns for each ticker
     cum_returns = (1 + df.pct_change()).cumprod()
+    # remove the first row by ones
+    cum_returns.iloc[0, :] = 1
     cum_returns.to_csv("data/cum_returns.csv")
 
     return cum_returns
 
 def compute_portfolio_value(cum_returns: pd.DataFrame,
-                            allocation: pd.DataFrame,
                             total_portfolio_value: float) -> pd.DataFrame:
     """
     Compute the value of a portfolio
     """
-
+    allocation = pd.read_csv("data/weights.csv", index_col=0, header=None)
+    # keep the first column
+    allocation = allocation.iloc[:, 0]
     pf_value = cum_returns * allocation * total_portfolio_value
     pf_value.to_csv("data/pf_value.csv")
 
     return pf_value
+
+def compute_sp500_value() -> pd.DataFrame:
+    """
+    Compute the value of the S&P500 index
+    """
+    sp500 = pd.read_csv("data/sp500_index.csv", index_col=0)
+    sp500 = sp500["Adj Close"]
+    sp500 = (1 + sp500.pct_change()).cumprod()
+    # replace first line by ones
+    sp500.iloc[0] = 1
+    sp500.to_csv("data/sp500_value.csv")
+
+    return sp500
+
 
 
 
