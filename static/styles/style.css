@@ -29,3 +29,15 @@ h1 {
     text-align: center;
     font-family: 'Courier New', Courier, monospace;
 }
+#comment {
+    font-size: 1em;
+    font-weight: normal;
+    text-align: center;
+    font-family: 'Courier New', Courier, monospace;
+}
+label {
+    font-size: 1em;
+    font-weight: normal;
+    text-align: center;
+    font-family: 'Courier New', Courier, monospace;
+}

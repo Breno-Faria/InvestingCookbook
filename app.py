@@ -22,8 +22,8 @@ def compound():
     return render_template("compounding.html", context=context, data=data)
 
 # rename this for compounding
-@sock.route('/echo')
-def echo_socket(ws):
+@sock.route('/compound-ws')
+def compound_socket(ws):
     while True:
         message = ws.receive()
         message = [int(val) for val in message.split(",")]

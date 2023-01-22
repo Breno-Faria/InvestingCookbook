@@ -36,8 +36,9 @@
           <p></p>
 
         </div>
+      <br>
       <button onclick="changeChartType()">
-        UFDUSJFUDSUFFDSS
+        Switch chart type
       </button>
 
     </div>
@@ -107,7 +108,7 @@
           socket.send([annual_rate.value, initial_investment.value, monthly_contribution.value]);
         };
 
-        const socket = new WebSocket('ws://' + location.host + '/echo');
+        const socket = new WebSocket('ws://' + location.host + '/compound-ws');
         socket.addEventListener('message', event => {
           let data = JSON.parse(event.data);
           dates = [];
