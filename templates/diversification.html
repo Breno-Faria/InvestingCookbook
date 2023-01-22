@@ -138,19 +138,27 @@
         socket.addEventListener('message', event => {
           let data = JSON.parse(event.data);
           dates = [];
-          investments = [];
-          investmentsWithoutCompounding = [];
+          personal = [];
+          sp = [];
+          eff = [];
 
-          for (const year in data) {
+          for (const year in data["dates"]) {
             dates.push(year);
           }
-          for (const [year, value] of Object.entries(data)) {
-            investments.push(parseFloat(value.Investment));
-            investmentsWithoutCompounding.push(parseFloat(value['Investment without compounding']));
-          }
+        for (const year in data["personal-pf"]) {
+            personal.push(data["personal-pf"][year]);
+        }
+        for (const year in data["sp500"]) {
+            sp.push(data["sp500"][year]);
+        }
+        for (const year in data["eff-pf"]) {
+            eff.push(data["eff-pf"][year]);
+        }
+
           chartData.labels = dates;
-          chartData.datasets[0].data = investments;
-          chartData.datasets[1].data = investmentsWithoutCompounding;
+          chartData.datasets[0].data = personal;
+          chartData.datasets[1].data = sp;
+          chartData.datasets[2].data = eff; 
           myChart.update();
           myChart.changeChartType;
         });
@@ -161,20 +169,28 @@
         let chartData = {
           labels: [],
           datasets: [{
-            label: 'Investment with compounding',
+            label: 'Your weights',
             data: [],
             backgroundColor: 'rgba(255, 99, 132, 0.2)',
             borderColor: 'rgba(255, 99, 132, 1)',
             borderWidth: 1,
             pointBackgroundColor: 'white',
           }, {
-            label: 'Investment without compounding',
+            label: 'S&P 500',
             data: [],
             backgroundColor: 'rgba(54, 162, 235, 0.2)',
             borderColor: 'rgba(54, 162, 235, 1)',
             borderWidth: 1,
             pointBackgroundColor: 'white',
-          }]
+          },
+            {   label: 'Efficient Frontier',
+                data: [],
+                backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                borderColor: 'rgba(255, 206, 86, 1)',
+                borderWidth: 1,
+                pointBackgroundColor: 'white',
+            }
+        ]
         };
         // Create the chart
         let myChart = new Chart(ctx, {
