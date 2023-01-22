@@ -35,36 +35,6 @@
             <canvas id="myChart"></canvas>
           
           <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-          
-          <script>
-            const ctx = document.getElementById('myChart');
-          
-            new Chart(ctx, {
-              type: 'bar',
-              data: {
-                labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-                datasets: [{
-                  label: 'amount accumulated',
-                  data: {{data}},
-                  borderWidth: 1
-                }, {
-                  label: 'amount accumulated',
-                  data: {{data}},
-                  borderWidth: 1
-                }]
-              },
-              options: {
-                scales: {
-                  y: {
-                    beginAtZero: true
-                  }
-                }
-              }
-            });
-          </script>
-
-
-
 
 
         </div>
@@ -80,7 +50,9 @@
       <input type="text" id="text" autofocus>
     </form>
     <script>
-
+        let investments = [];
+        let investmentsWithoutCompounding = [];
+        let dates = [];
 
       const log = (text, color) => {
         document.getElementById('log').innerHTML += `<span style="color: ${color}">${text}</span><br>`;
@@ -88,7 +60,16 @@
 
       const socket = new WebSocket('ws://' + location.host + '/echo');
       socket.addEventListener('message', event => {
-        console.log(event.data);
+        let data = JSON.parse(event.data);
+
+
+        for (const year in data) {
+            dates.push(year);
+        }
+        for (const [year, value] of Object.entries(data)) {
+        investments.push(parseFloat(value.Investment));
+        investmentsWithoutCompounding.push(parseFloat(value['Investment without compounding']));
+        }
       });
       document.getElementById('compounding-controls').onchange = ev => {
         
@@ -98,6 +79,31 @@
         
         socket.send([annual_rate.value, initial_investment.value, monthly_contribution.value]);
       };
+
+      const ctx = document.getElementById('myChart');
+          
+          new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: dates,
+              datasets: [{
+                label: 'amount accumulated',
+                data: investments,
+                borderWidth: 1
+              }, {
+                label: 'amount accumulated',
+                data: investmentsWithoutCompounding,
+                borderWidth: 1
+              }]
+            },
+            options: {
+              scales: {
+                y: {
+                  beginAtZero: true
+                }
+              }
+            }
+          });
     </script>
 
 
