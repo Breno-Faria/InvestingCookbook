@@ -28,4 +28,5 @@ def echo_socket(ws):
         message = ws.receive()
         message = [int(val) for val in message.split(",")]
         ts_compounding = compound_df(message[0]/100, message[1], 30,  message[2]).to_json(orient='index')
+        print(ts_compounding)
         ws.send(ts_compounding)
