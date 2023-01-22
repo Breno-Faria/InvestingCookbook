@@ -49,7 +49,7 @@
             <!--add a slider-->
             <div id="compounding-slider">
                 <label for="compounding-slider">Annual rate</label>
-                <input type="range" id="compounding-slider" name="compounding-slider" min="0" max="20" value="10" onchange="send(this.value);">
+                <input type="range" id="compounding-slider-value" name="compounding-slider" min="0" max="20" value="10" onchange="send(this.value);">
             </div>
             <!--numerical input for initial investment-->
             <div id="compounding-initial-investment">
@@ -98,8 +98,6 @@
           </script>
 
         <script>
-
-            }
         </script>
 
 
@@ -109,6 +107,35 @@
             
 
     </div>
+    <div>
+        <div id="log"></div>
+    <br>
+    <form id="form">
+      <label for="text">Input: </label>
+      <input type="text" id="text" autofocus>
+    </form>
+    <script>
+      const log = (text, color) => {
+        document.getElementById('log').innerHTML += `<span style="color: ${color}">${text}</span><br>`;
+      };
+
+      const socket = new WebSocket('ws://' + location.host + '/echo');
+      socket.addEventListener('message', ev => {
+        log('<<< ' + ev.data, 'blue');
+      });
+      document.getElementById('compounding-slider-value').onchange = ev => {
+        
+        const textField = document.getElementById('compounding-slider-value');
+        console.log(textField);
+        log('>>> ' + textField.value, 'red');
+        socket.send(textField.value);
+        
+      };
+    </script>
+
+
+
     
+    </div>
 </body>
 </html>
