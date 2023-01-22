@@ -1,128 +1,159 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Understanding Compounding</title>
-    <link rel="stylesheet" href="../static/styles/style.css">
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Understanding Compounding</title>
+  <link rel="stylesheet" href="../static/styles/style.css">
 
 </head>
+
 <body>
-    <div id="compounding-contents">
-        <div id="compounding-controls">
-            <h1>Understanding Compounding</h1>
-            <!--add a slider-->
-            <div id="compounding-slider">
-                <label for="compounding-slider">Annual rate</label>
-                <input type="range" id="compounding-slider-input" name="compounding-slider" min="0" max="10" value="5">
-            </div>
-            <!--numerical input for initial investment-->
-            <div id="compounding-initial-investment">
-                <label for="compounding-initial-investment">Initial Investment</label>
-                <input type="number" id="compounding-initial-investment-input" name="compounding-initial-investment" min="0" max="10000000" value="100000" step="10000">
-            </div>
-            <!--numerical input for monthly contribution-->
-            <div id="compounding-monthly-contribution">
-                <label for="compounding-monthly-contribution">Monthly Contribution</label>
-                <input type="number" id="compounding-monthly-contribution-input" name="compounding-monthly-contribution" min="0" max="1000000" value="1000" step="100">
-            </div>
+  <div id="compounding-contents">
+    <div id="compounding-controls">
+      <h1>Understanding Compounding</h1>
+      <!--add a slider-->
+      <div id="compounding-slider">
+        <label for="compounding-slider">Annual rate</label>
+        <input type="range" id="compounding-slider-input" name="compounding-slider" min="0" max="10" value="5">
+      </div>
+      <!--numerical input for initial investment-->
+      <div id="compounding-initial-investment">
+        <label for="compounding-initial-investment">Initial Investment</label>
+        <input type="number" id="compounding-initial-investment-input" name="compounding-initial-investment" min="0"
+          max="10000000" value="100000" step="10000">
+      </div>
+      <!--numerical input for monthly contribution-->
+      <div id="compounding-monthly-contribution">
+        <label for="compounding-monthly-contribution">Monthly Contribution</label>
+        <input type="number" id="compounding-monthly-contribution-input" name="compounding-monthly-contribution" min="0"
+          max="1000000" value="1000" step="100">
+      </div>
 
-        </div>
+    </div>
 
-        <div id="compounding-graphing">
-            <h1>Your investment throughout the years</h1>
-            <canvas id="myChart"></canvas>
-          
-          <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <div id="compounding-graphing">
+      <h1>Your investment throughout the years</h1>
+      <button onclick="changeChartType()">
+        UFDUSJFUDSUFFDSS
+      </button>
+      <canvas id="myChart"></canvas>
 
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-        </div>
-        <div>
-            
 
     </div>
     <div>
-        <div id="log"></div>
-    <br>
-    <script>
-      let investments = [1,2,4,5];
-      let investmentsWithoutCompounding = [];
-      let dates = ["f", "g", "h", "j"];
-
-      document.getElementById('compounding-controls').onchange = ev => {
-        
-        const annual_rate = document.getElementById('compounding-slider-input');
-        const initial_investment = document.getElementById('compounding-initial-investment-input');
-        const monthly_contribution = document.getElementById('compounding-monthly-contribution-input');
-
-        
-        
-        socket.send([annual_rate.value, initial_investment.value, monthly_contribution.value]);
-      };
-
-      const socket = new WebSocket('ws://' + location.host + '/echo');
-      socket.addEventListener('message', event => {
-        let data = JSON.parse(event.data);
-        dates = [];
-        investments = [];
-        investmentsWithoutCompounding = [];
-
-        for (const year in data) {
-            dates.push(year);
-        }
-        for (const [year, value] of Object.entries(data)) {
-        investments.push(parseFloat(value.Investment));
-        investmentsWithoutCompounding.push(parseFloat(value['Investment without compounding']));
-        }
-        chartData.labels = dates;
-        chartData.datasets[0].data = investments;
-        chartData.datasets[1].data = investmentsWithoutCompounding;
-        myChart.update();
-      });
 
 
-    const ctx = document.getElementById('myChart').getContext('2d');
-
-    let chartData = {
-      labels: [],
-      datasets: [{
-        label: 'Investment with compounding',
-        data: [],
-        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-        borderColor: 'rgba(255, 99, 132, 1)',
-        borderWidth: 1,
-        pointBackgroundColor: 'white',
-      }, {
-        label: 'Investment without compounding',
-        data: [],
-        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-        borderColor: 'rgba(54, 162, 235, 1)',
-        borderWidth: 1,
-        pointBackgroundColor: 'white',
-      }]
-    };
-// Create the chart
-  const myChart = new Chart(ctx, {
-    type: 'bar',
-    data: chartData,
-    options: {
-      scales: {
-        yAxes: [{
-          ticks: {
-            beginAtZero: false
+    </div>
+    <div>
+      <div id="log"></div>
+      <br>
+      <script>
+        ChartType = "bar";
+        function changeChartType() {
+          if (ChartType == "bar") {
+            ChartType = "line";
+          } else {
+            ChartType = "bar";
           }
-        }]
-      }
-    }
-  });
+          myChart.destroy();
+          myChart = new Chart(ctx, {
+            type: ChartType,
+            data: chartData,
+            options: {
+              scales: {
+                yAxes: [{
+                  ticks: {
+                    beginAtZero: false
+                  }
+                }]
+              }
+            }
+          });
+        }
+        let investments = [1, 2, 4, 5];
+        let investmentsWithoutCompounding = [];
+        let dates = ["f", "g", "h", "j"];
 
-    
-    </script>
+        document.getElementById('compounding-controls').onchange = ev => {
+
+          const annual_rate = document.getElementById('compounding-slider-input');
+          const initial_investment = document.getElementById('compounding-initial-investment-input');
+          const monthly_contribution = document.getElementById('compounding-monthly-contribution-input');
 
 
 
-    
+          socket.send([annual_rate.value, initial_investment.value, monthly_contribution.value]);
+        };
+
+        const socket = new WebSocket('ws://' + location.host + '/echo');
+        socket.addEventListener('message', event => {
+          let data = JSON.parse(event.data);
+          dates = [];
+          investments = [];
+          investmentsWithoutCompounding = [];
+
+          for (const year in data) {
+            dates.push(year);
+          }
+          for (const [year, value] of Object.entries(data)) {
+            investments.push(parseFloat(value.Investment));
+            investmentsWithoutCompounding.push(parseFloat(value['Investment without compounding']));
+          }
+          chartData.labels = dates;
+          chartData.datasets[0].data = investments;
+          chartData.datasets[1].data = investmentsWithoutCompounding;
+          myChart.update();
+          myChart.changeChartType;
+        });
+
+
+        const ctx = document.getElementById('myChart').getContext('2d');
+
+        let chartData = {
+          labels: [],
+          datasets: [{
+            label: 'Investment with compounding',
+            data: [],
+            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+            borderColor: 'rgba(255, 99, 132, 1)',
+            borderWidth: 1,
+            pointBackgroundColor: 'white',
+          }, {
+            label: 'Investment without compounding',
+            data: [],
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1,
+            pointBackgroundColor: 'white',
+          }]
+        };
+        // Create the chart
+        let myChart = new Chart(ctx, {
+          type: ChartType,
+          data: chartData,
+          options: {
+            scales: {
+              yAxes: [{
+                ticks: {
+                  beginAtZero: false
+                }
+              }]
+            }
+          }
+        });
+
+
+      </script>
+
+
+
+
     </div>
 </body>
+
 </html>
