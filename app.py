@@ -32,35 +32,45 @@ def diversification():
 def diversification_socket(ws):
     while True:
         message = ws.receive()
-        
+        stocks = ["MSFT", "RCL", "DIS", "PG", "AAPL", "MMM", "AXP", "BA", "LUV"]
         weights_personal = [int(val) for val in message.split(",")[:-1]]
         print(weights_personal)
         stocks_selected = [stocks[i] for i, weight in enumerate(weights_personal) if weight > 0]
-        weights_personal = [weight for weight in weights_personal if weight > 0]
-        print(stocks_selected)
-        stock_hist = pd.read_csv("data/stocks_hist.csv")[stocks_selected].pct_change().dropna()
+        weights_personal = [weight/100 for weight in weights_personal if weight > 0]
+ 
+        compute_efficient_weights(stocks_selected)
+        print(pd.read_csv("data/stocks_hist.csv", index_col=0)[stocks_selected])
+        stock_hist = pd.read_csv("data/stocks_hist.csv", index_col=0)[stocks_selected].pct_change().dropna()
         
-        weights_eff = compute_efficient_weights(stocks_selected)["weights"]
-        weights_eff = pd.DataFrame.from_dict(weights_eff, orient='index', columns=['value']).value
-        
+        weights_eff = pd.read_csv("data/weights.csv", index_col=0, header=None)[1].values.tolist()
+        print("efficient", weights_eff)
+        print("personal", weights_personal)
         personal_pf = pd.DataFrame()
         eff_pf = pd.DataFrame()
+
         for col in stock_hist.columns:
+            print('i')
             personal_pf[col] = stock_hist[col] * weights_personal[stocks_selected.index(col)]
             eff_pf[col] = stock_hist[col] * weights_eff[stocks_selected.index(col)]
-        
-        sp500 = pd.read_csv("data/sp500_value.csv").pct_change().dropna().cumsum()
+            print("e")
+        print(pd.read_csv("data/sp500_value.csv", index_col=0).dtypes)
+        sp500 = pd.read_csv("data/sp500_value.csv", index_col=0).pct_change().dropna().cumsum()
+        print(sp500)
+
         personal_pf = personal_pf.cumsum()
+        print(personal_pf)
         eff_pf = eff_pf.cumsum()
+        print(eff_pf)
 
         val = pd.concat([sp500, personal_pf, eff_pf], axis=1)
+        print(val)
 
-        dates = val.index
-        sp500 = val["SP500"].values
-        personal_pf = val[stocks_selected].sum(axis=1).values
-        eff_pf = val[stocks_selected].sum(axis=1).values
+        dates = val.index.tolist()
+        sp500 = val["SP500"].values.tolist()
+        personal_pf = val[stocks_selected].sum(axis=1).values.tolist()
+        eff_pf = val[stocks_selected].sum(axis=1).values.tolist()
 
-        context = {
+        context = json.dumps({
             "weights-personal": weights_personal, 
             "weights-eff": weights_eff, 
             "stocks": stocks_selected, 
@@ -68,7 +78,9 @@ def diversification_socket(ws):
             "sp500": sp500, 
             "personal-pf": personal_pf, 
             "eff-pf": eff_pf
-            }.json.dumps()
+            })
+
+        #print(context)
         ws.send(context)
 
 @app.route("/tutorial-compounding")
