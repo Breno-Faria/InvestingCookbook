@@ -1,3 +1,4 @@
+
 #compounding-contents {
     width: 100%;
     height: 100%;
@@ -31,6 +32,29 @@ h1 {
     text-align: center;
     font-family: 'Courier New', Courier, monospace;
 }
+#compounding-controls h1 {
+    font-size: 2em;
+    font-weight: bold;
+    text-align: center;
+    font-family: 'Courier New', Courier, monospace;
+}
+.logo {
+    font-size: 3em;
+    text-align: center;
+    font-family: 'Courier New', Courier, monospace;
+    text-shadow: 2px 2px #000000;
+    -webkit-filter: drop-shadow(1px 1px 6px  rgb(0, 0, 0));
+    /*filter: drop-shadow(5px 5px  rgb(0, 0, 0));*/
+}
+
+.slogan {
+    font-size: 2em;
+    text-align: center;
+    font-family: 'Courier New', Courier, monospace;
+    text-shadow: 2px 2px #000000;
+    -webkit-filter: drop-shadow(2px 2px  rgb(0, 0, 0));
+    /*filter: drop-shadow(5px 5px  rgb(0, 0, 0));*/
+}
 #comment {
     font-size: 1em;
     font-weight: normal;
@@ -43,3 +67,83 @@ label {
     text-align: center;
     font-family: 'Courier New', Courier, monospace;
 }
+p {
+    font-size: 1em;
+    font-weight: normal;
+    text-align: center;
+    font-family: 'Courier New', Courier, monospace;
+}
+a {
+    font-size: 1em;
+    font-weight: normal;
+    text-decoration: none;
+    font-family: 'Courier New', Courier, monospace;
+}
+.container {
+    
+    text-align: center;
+    color: white;
+    position: relative;
+    top: 0; right: 0; bottom: 0; left: 0;
+    background-size: cover;
+    
+
+}
+/* Centered text */
+.centered {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+/* Centered text */
+.bottomcentered {
+    position: absolute;
+    top: 80%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  
+.column {
+    align-items: center;
+    justify-content: center;
+    float: center;
+  }
+  
+.left, .right {
+    align-items: center;
+    justify-content: center;
+    width: 33%;
+  }
+  
+.middle {
+    align-items: center;
+    justify-content: center;
+    width: 33%;
+  }
+* {
+    box-sizing: border-box;
+  }
+  
+  /* Create three unequal columns that floats next to each other */
+.column {
+    float: left;
+    padding: 10px;
+    height: 300px; /* Should be removed. Only for demonstration */
+  }
+  
+.left, .right {
+    width: 33%;
+  }
+  
+.middle {
+    width: 33%;
+  }
+  
+  /* Clear floats after the columns */
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+  }

@@ -9,7 +9,7 @@ sock = Sock(app)
 @app.route("/")
 def home():
     context = {'title': "finance cookbook"}
-    return render_template("index.html", context=context)
+    return render_template("home.html", context=context)
 
 @app.route("/tutorial-diversification")
 def diversify():
@@ -29,3 +29,8 @@ def compound_socket(ws):
         message = [int(val) for val in message.split(",")]
         ts_compounding = compound_df(message[1], message[0]/100, 30,  message[2]).to_json(orient='index')
         ws.send(ts_compounding)
+
+
+@app.route("/about-us")
+def about():
+    return render_template("aboutus.html")
