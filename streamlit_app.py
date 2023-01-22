@@ -15,8 +15,8 @@ if __name__ == "__main__":
         maxtags=15,
         key='1')
 
-    start_date = st.date_input("Start date", value=pd.to_datetime("2019-01-01"))
-    end_date = st.date_input("End date", value=pd.to_datetime("2020-01-01"))
+    start_date = st.sidebar.date_input("Start date", value=pd.to_datetime("2019-01-01"))
+    end_date = st.sidebar.date_input("End date", value=pd.to_datetime("2020-01-01"))
     pf_allocation = pd.DataFrame({'Name': names,
                                   'Allocation': [1 / len(names)] * len(names)})
     # pf = create_pf(names, start_date, end_date, pf_allocation)
