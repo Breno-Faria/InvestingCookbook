@@ -41,20 +41,15 @@
             <td id="totalWeight"></td>
           </tr>
         </table>
-        <button onclick="checkWeightSum()">Check Weights</button>
+        <button onclick="computePf()">Confirm</button>
     </div>
-      <!--numerical input for initial investment-->
-      <div id="compounding-initial-investment" style="margin-left: 1rem;">
+
+    <div id="compounding-initial-investment" style="margin-left: 1rem;" onchange="computePf()">
         <label for="compounding-initial-investment">Initial Investment</label>
         <input type="number" id="compounding-initial-investment-input" name="compounding-initial-investment" min="0"
-          max="10000000" value="100000" step="10000" >
-      </div>
-      <!--numerical input for monthly contribution-->
-      <div id="compounding-monthly-contribution"style="margin-left: 1rem;">
-        <label for="compounding-monthly-contribution">Monthly Contribution</label>
-        <input type="number" id="compounding-monthly-contribution-input" name="compounding-monthly-contribution" min="0"
-          max="1000000" value="1000" step="100">
-      </div>
+          max="10000000" value="100000" step="10000">
+    </div>
+
       <br>
         <div id="comment">
           <p></p>
@@ -83,20 +78,7 @@
     <div>
       <div id="log"></div>
       <br>
-      <script>
-        function checkWeightSum() {
-            var weightElements = document.getElementsByName("stock-weight");
-            var weightSum = 0;
-            for (var i = 0; i < weightElements.length; i++) {
-                weightSum += parseInt(weightElements[i].value);
-            }
-            document.getElementById("totalWeight").innerHTML = weightSum;
-            if (weightSum !== 100) {
-                alert("The sum of the weights must be equal to 100!");
-            }
-            WeightSum();
-            }
-      </script>
+
       <script>
         function WeightSum() {
           var weightElements = document.getElementsByName("stock-selection");
@@ -131,33 +113,28 @@
             }
           });
         }
-        let investments = [1, 2, 4, 5];
-        let investmentsWithoutCompounding = [];
-        let dates = ["f", "g", "h", "j"];
-
-        document.getElementById('compounding-controls').onchange = ev => {
-
-          const annual_rate = document.getElementById('compounding-slider-input');
-          const initial_investment = document.getElementById('compounding-initial-investment-input');
-          const monthly_contribution = document.getElementById('compounding-monthly-contribution-input');
-
-          if (annual_rate.value){
-              document.getElementById('comment').innerHTML = "You are investing at a rate of " + annual_rate.value + "% per year. You are investing " + initial_investment.value + " dollars initially and " + monthly_contribution.value + " dollars monthly. Your investment will grow exponentially over time. <br>";
-          }
-          if(annual_rate.value == 0){
-              document.getElementById('comment').innerHTML += "Try increasing the annual rate to see how your investment grows over time.";
-          }
-          else if(annual_rate.value < 5){
-              document.getElementById('comment').innerHTML += "That's not bad but maybe you'd like to increase your rate to see how much more you can make.";
-          }
-          else if(annual_rate.value >= 5){
-              document.getElementById('comment').innerHTML += "Notice how insignificant your initial investment is compared to your investment after all thoses years? <br> This goes to show you the importance of compounding!";
-          }
-
-          socket.send([annual_rate.value, initial_investment.value, monthly_contribution.value]);
+        let weights = [];
+        function computePf() {
+            let weightElements = document.getElementsByName("stock-selection");
+            var weightSum = 0;
+            var initial_investment = document.getElementById("compounding-initial-investment-input");
+            weights = [];
+            for (var i = 0; i < weightElements.length; i++) {
+                weights.push(parseInt(weightElements[i].value));
+                weightSum += parseInt(weightElements[i].value);
+            }
+            console.log(weightSum)
+            if (weightSum !== 100) {
+                alert("The sum of the weights must be equal to 100!");
+            } else {
+                console.log(weights);
+                socket.send([weights, initial_investment.value]);
+                console.log(initial_investment);
+            }
+                WeightSum();
         };
 
-        const socket = new WebSocket('ws://' + location.host + '/compound-ws');
+        const socket = new WebSocket('ws://' + location.host + '/diversification-ws');
         socket.addEventListener('message', event => {
           let data = JSON.parse(event.data);
           dates = [];
