@@ -21,7 +21,6 @@ if __name__ == "__main__":
     pf_allocation = pd.DataFrame({'Name': names,
                                   'Allocation': [1 / len(names)] * len(names)})
     pf = create_pf(names, start_date, end_date, pf_allocation)
-    st.write(pf)
     plot_cum_returns(pf)
     compute_efficient_weights(names, start=start_date, end=end_date)
     total_portfolio_value = st.sidebar.number_input("Total portfolio value",
@@ -31,10 +30,6 @@ if __name__ == "__main__":
                                 end=end_date,
                                 total_portfolio_value=total_portfolio_value)
     cum_returns = compute_cum_returns()
-    st.write(cum_returns)
-    st.write(compute_portfolio_value(cum_returns, total_portfolio_value))
-    st.write(compute_sp500_value(total_portfolio_value))
-    st.write(compute_balanced_pf_value(cum_returns, total_portfolio_value))
     plot_pf_vs_index()
 
 

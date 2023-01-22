@@ -105,10 +105,8 @@ def compute_discrete_allocation(names: List[str],
     df = df[names]
     latest_prices = get_latest_prices(df)
     weights = pd.read_csv("data/weights.csv", header=None)
-    st.write(weights)
     # Convert weights to a dictionary
     weights = weights.set_index(0).T.to_dict('records')[0]
-    st.write(weights)
 
     da = DiscreteAllocation(weights, latest_prices,
                             total_portfolio_value=total_portfolio_value)
@@ -206,6 +204,7 @@ def plot_pf_vs_index() -> None:
                         yaxis_title="Value")
 
     st.plotly_chart(fig)
+
     return None
 
 
