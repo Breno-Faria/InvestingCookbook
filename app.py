@@ -15,10 +15,17 @@ def home():
 def tutorials():
     context = {'title': "finance cookbook"}
     return render_template("tutorials.html", context=context)
+
 @app.route("/tutorial-diversification")
 def diversification():
     stocks = ["MSFT", "RCL", "DIS", "PG", "AAPL", "MMM", "AXP", "BA", "LUV"]
-    return render_template("diversification.html", stocks=stocks)
+    context = {"stocks" : [[stock] for stock in stocks]}
+    stock_info = pd.read_csv("data/sp500_info.csv")
+    for i, stock in enumerate(context["stocks"]):
+        print(stock_info.loc[stock_info["Symbol"] == context["stocks"][i][0]]["GICS Sector"].values[0])
+        context["stocks"][i] += [stock_info.loc[stock_info["Symbol"] == context["stocks"][i][0]]["GICS Sector"].values[0]]
+
+    return render_template("diversification.html", context=context)
 
 @sock.route('/diversification-ws')
 def diversification_socket(ws):

@@ -147,10 +147,25 @@ a {
     display: table;
     clear: both;
   }
-label {
+
+#radio-stocks {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    font-family: 'Courier New', Courier, monospace;
+  }
+
+#radio-stocks legend {
+    font: 1.5rem;
+    font-family: 'Courier New', Courier, monospace;
+  }
+  
+#radio-stocks label {
     font: 1rem 'Fira Sans', sans-serif;
 }
 
-input {
+#radio-stocks input {
     margin: 0.4rem;
 }
