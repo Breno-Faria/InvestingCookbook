@@ -24,7 +24,7 @@ def compound_investment_with_monthly_contributions(initial, rate, years, monthly
             dates.append(dates[-1] + pd.DateOffset(months=1))
     # Create a DataFrame from the investment list and add column headers
     df = pd.DataFrame({'Investment':investment, 'Investment without compounding':investment_no_compounding},index=dates).resample('Y').first()
-    df.index = df.index.strftime('%Y-%m-%d')
+    df.index = df.index.strftime('%Y')
     return df
 
 if __name__ == "__main__":
