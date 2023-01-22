@@ -3,7 +3,7 @@ from flask_sock import Sock
 from src.compounder import compound_investment_with_monthly_contributions as compound_df
 from src.optimizer import compute_efficient_weights, compute_discrete_allocation
 import json
-from utils import *
+import pandas as pd
 
 app = Flask(__name__, static_folder='static')
 sock = Sock(app)
