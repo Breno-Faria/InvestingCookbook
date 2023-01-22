@@ -6,6 +6,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Understanding Compounding</title>
     <link rel="stylesheet" href="../static/styles/style.css">
+    <script>
+        function test(val) {
+            console.log(val);
+        }
+
+        async function sendData(val) {
+            console.log(typeof(val));
+            const socket = new WebSocket('ws://' + location.host + '/echo');
+            
+            socket.send(val);
+        }
+
+        this.send = function (message, callback) {
+            this.waitForConnection(function () {
+                const socket = new WebSocket('ws://' + location.host + '/echo');
+                socket.send(message);
+                if (typeof callback !== 'undefined') {
+                callback();
+                }
+            }, 1000);
+        };
+
+        this.waitForConnection = function (callback, interval) {
+            const socket = new WebSocket('ws://' + location.host + '/echo');
+            if (socket.readyState === 1) {
+                callback();
+            } else {
+                var that = this;
+                // optional: implement backoff for interval here
+                setTimeout(function () {
+                    that.waitForConnection(callback, interval);
+                }, interval);
+            }
+        };
+    </script>
 </head>
 <body>
     <div id="compounding-contents">
@@ -14,7 +49,7 @@
             <!--add a slider-->
             <div id="compounding-slider">
                 <label for="compounding-slider">Annual rate</label>
-                <input type="range" id="compounding-slider" name="compounding-slider" min="0" max="20" value="10">
+                <input type="range" id="compounding-slider" name="compounding-slider" min="0" max="20" value="10" onchange="send(this.value);">
             </div>
             <!--numerical input for initial investment-->
             <div id="compounding-initial-investment">
@@ -63,26 +98,7 @@
           </script>
 
         <script>
-            const log = (text, color) => {
-            document.getElementById('log').innerHTML += `<span style="color: ${color}">${text}</span><br>`;
-            };
 
-            const socket = new WebSocket('ws://' + location.host + '/echo');
-            socket.addEventListener('message', ev => {
-            log('<<< ' + ev.data, 'blue');
-            });
-            document.getElementById('form').onsubmit = ev => {
-            ev.preventDefault();
-            const textField = document.getElementById('text');
-            log('>>> ' + textField.value, 'red');
-            socket.send(textField.value);
-            textField.value = '';
-            };
-
-            function sendData() {
-                const socket = new WebSocket('ws://' + location.host + '/echo');
-                
-            }
             }
         </script>
 
