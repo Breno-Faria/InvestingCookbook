@@ -154,3 +154,16 @@ label {
 input {
     margin: 0.4rem;
 }
+
+#container {
+  display: flex;
+}
+#pane1, #pane2 {
+  flex: 1;
+  border-right: 2px solid black; /* Add a right border to each pane */
+}
+
+
+#pane2 {
+  border-right: none; /* Remove the right border of the last pane */
+}
