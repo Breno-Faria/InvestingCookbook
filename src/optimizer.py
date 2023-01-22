@@ -1,4 +1,3 @@
-import finquant.portfolio as fq
 from typing import List, Tuple, Any
 import pandas as pd
 from pypfopt import EfficientFrontier
