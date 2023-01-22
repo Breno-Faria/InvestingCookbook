@@ -1,6 +1,5 @@
 import pandas as pd
 import datetime as dt
-import matplotlib.pyplot as plt
 
 # compound series beginning at initial value, with annual growth rate and monthly contributions
 def compound_investment_with_monthly_contributions(initial, rate, years, monthly_contribution):
@@ -27,9 +26,3 @@ def compound_investment_with_monthly_contributions(initial, rate, years, monthly
     df.index = df.index.strftime('%Y')
     return df
 
-if __name__ == "__main__":
-    # create a series of annual balances
-    balances = compound_series(100000, 0.1, 20)
-    # print the series
-    plt.plot(balances)
-    plt.show()
