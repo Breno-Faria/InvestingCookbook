@@ -15,7 +15,7 @@
             <!--add a slider-->
             <div id="compounding-slider">
                 <label for="compounding-slider">Annual rate</label>
-                <input type="range" id="compounding-slider-input" name="compounding-slider" min="0" max="20" value="10">
+                <input type="range" id="compounding-slider-input" name="compounding-slider" min="0" max="10" value="5">
             </div>
             <!--numerical input for initial investment-->
             <div id="compounding-initial-investment">
@@ -50,18 +50,27 @@
       <input type="text" id="text" autofocus>
     </form>
     <script>
-        let investments = [];
-        let investmentsWithoutCompounding = [];
-        let dates = [];
+      let investments = [1,2,4,5];
+      let investmentsWithoutCompounding = [];
+      let dates = ["f", "g", "h", "j"];
 
-      const log = (text, color) => {
-        document.getElementById('log').innerHTML += `<span style="color: ${color}">${text}</span><br>`;
+      document.getElementById('compounding-controls').onchange = ev => {
+        
+        const annual_rate = document.getElementById('compounding-slider-input');
+        const initial_investment = document.getElementById('compounding-initial-investment-input');
+        const monthly_contribution = document.getElementById('compounding-monthly-contribution-input');
+
+        
+        
+        socket.send([annual_rate.value, initial_investment.value, monthly_contribution.value]);
       };
 
       const socket = new WebSocket('ws://' + location.host + '/echo');
       socket.addEventListener('message', event => {
         let data = JSON.parse(event.data);
-
+        dates = [];
+        investments = [];
+        investmentsWithoutCompounding = [];
 
         for (const year in data) {
             dates.push(year);
@@ -70,40 +79,49 @@
         investments.push(parseFloat(value.Investment));
         investmentsWithoutCompounding.push(parseFloat(value['Investment without compounding']));
         }
+        chartData.labels = dates;
+        chartData.datasets[0].data = investments;
+        chartData.datasets[1].data = investmentsWithoutCompounding;
+        myChart.update();
       });
-      document.getElementById('compounding-controls').onchange = ev => {
-        
-        const annual_rate = document.getElementById('compounding-slider-input');
-        const initial_investment = document.getElementById('compounding-initial-investment-input');
-        const monthly_contribution = document.getElementById('compounding-monthly-contribution-input');
-        
-        socket.send([annual_rate.value, initial_investment.value, monthly_contribution.value]);
-      };
 
-      const ctx = document.getElementById('myChart');
-          
-          new Chart(ctx, {
-            type: 'bar',
-            data: {
-              labels: dates,
-              datasets: [{
-                label: 'amount accumulated',
-                data: investments,
-                borderWidth: 1
-              }, {
-                label: 'amount accumulated',
-                data: investmentsWithoutCompounding,
-                borderWidth: 1
-              }]
-            },
-            options: {
-              scales: {
-                y: {
-                  beginAtZero: true
-                }
-              }
-            }
-          });
+
+    const ctx = document.getElementById('myChart').getContext('2d');
+
+    let chartData = {
+      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+      datasets: [{
+        label: 'Investment with compounding',
+        data: [],
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        borderColor: 'rgba(255, 99, 132, 1)',
+        borderWidth: 1,
+        pointBackgroundColor: 'white',
+      }, {
+        label: 'Investment without compounding',
+        data: [25, 20, 30, 22, 17, 29, 18, 15, 22, 32, 27, 18],
+        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+        borderColor: 'rgba(54, 162, 235, 1)',
+        borderWidth: 1,
+        pointBackgroundColor: 'white',
+      }]
+    };
+// Create the chart
+  const myChart = new Chart(ctx, {
+    type: 'line',
+    data: chartData,
+    options: {
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero: false
+          }
+        }]
+      }
+    }
+  });
+
+    
     </script>
 
 
