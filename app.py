@@ -1,6 +1,6 @@
 from flask import Flask, render_template
 from flask_sock import Sock
-from src.compounder import compound_investment_with_monthly_contributions as compound
+from src.compounder import compound_investment_with_monthly_contributions as compound_df
 import json
 
 app = Flask(__name__, static_folder='static')
@@ -27,5 +27,5 @@ def echo_socket(ws):
     while True:
         message = ws.receive()
         message = [int(val) for val in message.split(",")]
-        ts_compounding = compound(message[0]/100, message[1], message[2], 30).to_json(orient='index')
+        ts_compounding = compound_df(message[0]/100, message[1], message[2], 30).to_json(orient='index')
         ws.send(ts_compounding)
